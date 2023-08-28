@@ -1,0 +1,9 @@
+<div class="list-group" style="list-style: none">
+{% for category in category_list %}
+    <li><p>
+        <a href="/{{ username }}/category/{{ category.pk }}/" class="list-group-item" style="color: deepskyblue">{{ category.name }}({{ category.count_num }})</a>
+    </p></li>
+{% endfor %}
+</div>
+
+

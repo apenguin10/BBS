@@ -1,0 +1,24 @@
+{% extends 'backend_base.html' %}
+
+{% block css %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'kindeditor-4.1.11-zh-CN/kindeditor/themes/default/default.css' %}">
+    <link rel="stylesheet" href="{% static 'kindeditor-4.1.11-zh-CN/kindeditor/themes/simple/simple.css' %}">
+{% endblock %}
+
+{% block category %}
+    <h3 class="text-center">添加分类</h3>
+    <form action="" method="post">
+        {% csrf_token %}
+        <h4 style="color: blueviolet">分类</h4>
+        <div>
+            <input type="text" name="category_content" class="form-control">
+        </div>
+        <br>
+        <input type="submit" class="btn btn-primary btn-lg pull-right">
+    </form>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

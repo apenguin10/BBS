@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    {% load static %}
+    <script src="{% static 'js/jQuery_3_7.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'bootstrap-3.4.1-dist/bootstrap-3.4.1-dist/css/bootstrap.min.css' %}">
+    <script src="{% static 'bootstrap-3.4.1-dist/bootstrap-3.4.1-dist/js/bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'font-awesome-4.7.0/css/font-awesome.min.css' %}">
+</head>
+<body>
+<!-- 导航条 -->
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            {#      <a class="navbar-brand" href="#">博客</a>#}
+            <span class="navbar-brand">博客</span>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/home/">首页 <span class="sr-only">(current)</span></a></li>
+            </ul>
+            <form class="navbar-form navbar-left" method="get">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Search" name="search" id="id_form_search">
+                </div>
+                <button type="submit" class="btn btn-default">搜索</button>
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+                {% if request.user.is_authenticated %}
+                    <li><a href="/{{ request.user.username }}/">{{ request.user.username }}</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">更多操作 <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url 'set_pwd' %}" data-toggle="modal" data-target=".bs-example-modal-sm"
+                                   id="id_set_password">修改密码</a></li>
+                            <li><a href="/set/avatar/">修改头像</a></li>
+                            <li><a href="/backend/">后台管理</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="{% url 'logout' %}">退出登录</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">登录</a></li>
+                    <li><a href="{% url 'register' %}">注册</a></li>
+                {% endif %}
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<!-- 修改密码模态框 -->
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <br>
+            <h3 class="text-center">修改密码</h3>
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1">
+                    <div class="form-group">
+                        <label for="">用户名:</label>
+                        <input type="text" disabled value="{{ request.user.username }}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="">原密码:</label>
+                        <input type="password" name="old_password" class="form-control" id="id_old_password"
+                               maxlength="12">
+                    </div>
+                    <div class="form-group">
+                        <label for="">新密码:</label>
+                        <input type="password" name="new_password" class="form-control" id="id_new_password"
+                               maxlength="12">
+                    </div>
+                    <div class="form-group">
+                        <label for="">确认密码:</label>
+                        <input type="password" name="confirm_password" class="form-control" id="id_confirm_password"
+                               maxlength="12">
+                    </div>
+                    <br>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">取消</button>
+                        <button class="btn btn-info btn-lg" id="id_edit_pwd">提交</button>
+                    </div>
+                    <span style="color: red" id="id_pwd_error" class="pull-left"></span>
+                    <br><br>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 展示内容 -->
+<div class="container-fluid">
+    <div class="col-md-8 col-md-offset-2">
+        <ul class="media-list">
+            {% for article_obj in page_queryset %}
+                <li class="media">
+                    <h4 class="media-heading"><a
+                            href="/{{ article_obj.blog.userinfo.username }}/article/{{ article_obj.pk }}/">{{ article_obj.title }}</a>
+                    </h4>
+                    <div class="media-left">
+                        <a href="#">
+                            <img class="media-object" src="/media/{{ article_obj.blog.userinfo.avatar }}" alt="..."
+                                 height="80px">
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        {{ article_obj.desc }}
+                    </div>
+                    <br>
+                    <div>
+                        <span><a
+                                href="/{{ article_obj.blog.userinfo.username }}/">{{ article_obj.blog.userinfo.username }}</a></span>
+                        <span>发布于</span>
+                        <span>{{ article_obj.create_time|date:'Y-m-d H:i:s' }}&nbsp;&nbsp;</span>
+                        <span><span class="glyphicon glyphicon-comment"></span>评论({{ article_obj.comment_num }})&nbsp;&nbsp;</span>
+                        <span><span class="glyphicon glyphicon-thumbs-up"></span>点赞({{ article_obj.up_num }})&nbsp;&nbsp;</span>
+                        <span><span
+                                class="glyphicon glyphicon-thumbs-down"></span>点踩({{ article_obj.down_num }})</span>
+                    </div>
+                </li>
+                <hr>
+            {% endfor %}
+            {{ page_obj.page_html|safe }}
+        </ul>
+    </div>
+{#    <div class="col-md-2">#}
+{#        <div class="panel panel-info">#}
+{#            <div class="panel-heading">#}
+{#                <h3 class="panel-title">百度</h3>#}
+{#            </div>#}
+{#            <div class="panel-body">#}
+{#                搜搜看#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="panel panel-primary">#}
+{#            <div class="panel-heading">#}
+{#                <h3 class="panel-title">阿里巴巴</h3>#}
+{#            </div>#}
+{#            <div class="panel-body">#}
+{#                淘宝购物#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="panel panel-danger">#}
+{#            <div class="panel-heading">#}
+{#                <h3 class="panel-title">腾讯</h3>#}
+{#            </div>#}
+{#            <div class="panel-body">#}
+{#                王者荣耀#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="panel panel-warning">#}
+{#            <div class="panel-heading">#}
+{#                <h3 class="panel-title">美团</h3>#}
+{#            </div>#}
+{#            <div class="panel-body">#}
+{#                外卖消费#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+</div>
+<!-- js代码 -->
+<script>
+    $('#id_set_password').click(function () {
+        $("#id_pwd_error").text('')
+        $("#id_old_password").val('')
+        $("#id_new_password").val('')
+        $("#id_confirm_password").val('')
+    })
+    $("#id_edit_pwd").click(function () {
+        $.ajax({
+            url: "{% url 'set_pwd' %}",
+            type: 'post',
+            data: {
+                'old_password': $("#id_old_password").val(),
+                'new_password': $("#id_new_password").val(),
+                'confirm_password': $("#id_confirm_password").val(),
+                'csrfmiddlewaretoken': "{{ csrf_token }}"
+            },
+            success: function (args) {
+                if (args) {
+                    if (args.code == 1000) {
+                        alert(args.msg);
+                        window.location.reload()
+                    } else {
+                        $("#id_pwd_error").text(args.msg)
+                    }
+                }
+            }
+        })
+    })
+    if ("{{ search }}" == "true") {
+        $("#id_form_search").val("{{ search }}")
+    }
+
+</script>
+</body>
+</html>
