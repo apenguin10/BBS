@@ -56,7 +56,7 @@ python、django
 	        - article		ForeignKey(to="Article")
 	        - is_up			BooleanField()
     
-	    - 文章评论表
+	 - 文章评论表
 	    	# 用来记录哪个用户给哪篇文章写了哪些评论内容
 	        - user				ForeignKey(to="User")
 	        - article			ForeignKey(to="Article")
